@@ -1,0 +1,89 @@
+name: Deploy
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    name: Test using pytest
+    runs-on: ubuntu-latest
+    environment: TEST_PYTHON
+    env:
+      MONGO_DB_CONNECTION_STRING: ${{secrets.MONGO_DB_CONNECTION_STRING}}
+      MONGO_DB_NAME: ${{secrets.MONGO_DB_NAME}}
+      AWS_DEFAULT_REGION: ${{secrets.AWS_DEFAULT_REGION}}
+      AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
+      AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    - name: Upload workspace for next job
+      uses: actions/upload-artifact@v4
+      with:
+        name: production-files
+        path: .
+    - name: Test with pytest
+      run: |
+        pip install pytest pytest-cov pytest-asyncio pytest-mock
+        pytest tests/ --doctest-modules --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html
+
+
+  deploy:
+    runs-on: ubuntu-latest
+    environment: TEST_PYTHON
+    needs: test
+    env:
+      AWS_DEFAULT_REGION: ${{secrets.AWS_DEFAULT_REGION}}
+      AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
+      AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+    steps:
+    - name: Download artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: production-files
+        path: .
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{secrets.AWS_ACCESS_KEY_ID}}
+        aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+        aws-region: ${{secrets.AWS_DEFAULT_REGION}}
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
+
+    - name: Build, tag, and push image to Amazon ECR
+      id: build-image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: bandpics-event-api
+        IMAGE_TAG: latest
+      run: |
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+    - name: Update Lambda function with latest ECR image
+      env:
+        LAMBDA_NAME: jykng-bandpics-events
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: bandpics-event-api
+        IMAGE_TAG: latest
+      run: |
+        aws lambda update-function-code \
+        --function-name $LAMBDA_NAME \
+        --image-uri $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+
+
+

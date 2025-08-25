@@ -127,3 +127,13 @@ async def delete_event(event_id: str, db=Depends(connect_to_db)):
         return {"message": "Event deleted successfully"}
     else:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Event with that ID not found")
+
+
+handler = Mangum(app=app, lifespan="off") # Use Mangum to handle AWS Lambda events
+
+if __name__ == "__main__":
+   import uvicorn
+   uvicorn.run(app, host="0.0.0.0", port=8080)
+
+#docker build -t bandpics-event-api .
+#docker run -d --name event_api_dev -p 8000:8000 bandpics-event-api
