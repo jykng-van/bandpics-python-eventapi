@@ -13,10 +13,8 @@ from app.models import LiveEvent, UpdateLiveEvent
 from PIL import Image
 from bson.objectid import ObjectId
 from pymongo import MongoClient, ReturnDocument
-import os
 import json
 import io
-from dotenv import load_dotenv
 from datetime import datetime, timezone
 
 from mangum import Mangum # Use mangum for AWS
@@ -24,6 +22,7 @@ from starlette.requests import Request
 import asyncio
 
 app = FastAPI(lifespan=lifespan) # start FastAPI with lifespan
+print('app:',app)
 
 
 # CORS settings

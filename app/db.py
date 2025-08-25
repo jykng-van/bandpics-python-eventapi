@@ -27,6 +27,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 
 # method to connect to the MongoDb Connection for dependency injection
 def connect_to_db():
+    print('DB Connection', os.getenv('MONGO_DB_CONNECTION_STRING'))
     client = AsyncMongoClient(os.getenv('MONGO_DB_CONNECTION_STRING'))
     print(client)
     print('DB Name', os.getenv('MONGO_DB_NAME'))
