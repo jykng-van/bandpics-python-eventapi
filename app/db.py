@@ -20,8 +20,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     app.db = mongo_connection
     app.client = app.db.client
 
-    """ app.client = mongo_connection[0]
-    app.db = mongo_connection[1] """
+
     yield
     # Close the database connection
     await shutdown_db_client(app)
@@ -30,14 +29,10 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 def connect_to_db():
     client = AsyncMongoClient(os.getenv('MONGO_DB_CONNECTION_STRING'))
     print(client)
+    print('DB Name', os.getenv('MONGO_DB_NAME'))
     db = client[os.getenv('MONGO_DB_NAME')]
     return db
-    """ with AsyncMongoClient(os.getenv('MONGO_DB_CONNECTION_STRING')) as client:
-        db = client.get_database(os.getenv('MONGO_DB_NAME'))
-        print(client)
-        print(db)
-        print("MongoDB connected.")
-        yield db """
+
 
 
 
