@@ -29,6 +29,7 @@ class MongoDBModel(BaseModel):
         arbitrary_types_allowed = True,
         populate_by_name=True,
     )
+
     @field_serializer("id", when_used="json", check_fields=False) # Serializer for id field when used in JSON
     def object_id_to_str(self, v: PyObjectId) -> str:
         return str(v) if v else None
@@ -43,6 +44,10 @@ class LiveEvent(MongoDBModel):
 
     location: dict = Field(description="Embedded external data about the event's location", default=None)
     data: dict = Field(description="Embedded external data about the event", default=None)
+
+    @field_serializer('eventDate', when_used='json', check_fields=False)
+    def serialize_date(self, d: date, _info):
+        return d.strftime('%Y-%m-%d') if d else None
 
 class UpdateLiveEvent(BaseModel): # update model for image data because of group id
     name: Optional[str] = Field(default=None, description="Event name")

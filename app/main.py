@@ -79,19 +79,14 @@ async def create_event(event:Annotated[UpdateLiveEvent, Body(embed=True)], db=De
         k: v for k, v in event.model_dump(by_alias=True).items() if v is not None
     }
     if 'eventDate' in event: # convert string to date
-        event['eventDate'] = datetime.strptime(event['eventDate'], '%Y-%m-%d').date()
+        event['eventDate'] = datetime.strptime(event['eventDate'], '%Y-%m-%d')
+    print(event)
 
     event_collection = db.get_collection("live_events")
     # prepare for insertion
-    live_event = {
-        'name': event['name'],
-        'description': event['description'] if 'description' in event else '',
-        'created_at': datetime.now(timezone.utc),
-        'updated_at': datetime.now(timezone.utc)
-    }
-    id = (await event_collection.insert_one(live_event)).inserted_id
-    result_event = await event_collection.find_one({'_id': id})
 
+    id = (await event_collection.insert_one(event)).inserted_id
+    result_event = await event_collection.find_one({'_id': id})
     return result_event
 
 # Update an event
@@ -108,7 +103,7 @@ async def update_event(event_id: str, event:Annotated[UpdateLiveEvent, Body(embe
     }
     if len(event) > 0:
         if 'eventDate' in event: # convert string to date
-            event['eventDate'] = datetime.strptime(event['eventDate'], '%Y-%m-%d').date()
+            event['eventDate'] = datetime.strptime(event['eventDate'], '%Y-%m-%d')
 
         update_result = await event_collection.find_one_and_update(
             {'_id': ObjectId(event_id)},
