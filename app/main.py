@@ -25,8 +25,6 @@ import asyncio
 
 app = FastAPI(lifespan=lifespan) # start FastAPI with lifespan
 
-load_dotenv() # load environment variables from .env file
-mongo_client = MongoClient(os.getenv('MONGO_DB_CONNECTION_STRING'))
 
 # CORS settings
 app.add_middleware(
@@ -37,8 +35,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-async def get_database():
-    return mongo_client.get_database(os.getenv('MONGO_DB_NAME')) # get the database from the connection string
 
 @app.get("/")
 async def read_root():
