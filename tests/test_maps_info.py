@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch, MagicMock
 
-from image_location.maps_info import MapsInfo, SearchType
+from app.maps_info import MapsInfo, SearchType
 import math
 
 class TestMapsInfo(unittest.TestCase):

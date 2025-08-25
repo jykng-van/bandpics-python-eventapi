@@ -43,5 +43,5 @@ def connect_to_db():
 
 # method to close the database connection
 async def shutdown_db_client(app):
-    app.client.close()
+    await app.client.close()
     print("Database disconnected.")
