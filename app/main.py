@@ -57,6 +57,7 @@ async def list_events(db=Depends(connect_to_db)) -> list[LiveEvent]:
 async def get_event(event_id: str, db=Depends(connect_to_db)) -> LiveEvent:
     event_collection = db.get_collection("live_events")
     #might need to use aggregate
+    print(event_id)
     event = await event_collection.find_one({'_id': ObjectId(event_id)})
     if event:
         return event
