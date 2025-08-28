@@ -8,7 +8,7 @@ from http import HTTPStatus
 
 from bson.objectid import ObjectId
 
-from app.main import app
+from app.main import app, setup_maps_info
 from app.db import connect_to_db
 
 # test list_events
@@ -96,3 +96,13 @@ async def test_delete_event(client, mock_mongodb_live_events_initialized, get_ev
     event_collection = db.get_collection('live_events')
     event = await event_collection.find_one({'_id': get_event_id})
     assert event is None, "Event not deleted"
+
+# test get_places
+@pytest.mark.asyncio
+async def test_get_places(client, mock_maps_info):
+    app.dependency_overrides[setup_maps_info] = mock_maps_info
+
+    response = client.get(f"/locations/?lat=12.3&lng=45.6")
+    assert response.status_code == HTTPStatus.OK
+
+

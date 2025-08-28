@@ -19,12 +19,12 @@ class MapsInfo:
     def __init__(self):
         load_dotenv() # load environment variable from .env
 
-    def get_location(self, coords, search_type:SearchType=SearchType.DEFAULT, search_radius=50.0):
+    def get_location(self, coords, search_type:SearchType=SearchType.DEFAULT, search_radius:float=50.0):
 
         # set search radius and included types based on search type
         if search_type == SearchType.DEFAULT:
             included_types = ['event_venue','night_club']
-            rank_preference = 'POPULARITY'
+            rank_preference = 'DISTANCE'
         elif search_type == search_type.EXPANDED:
             included_types = ['event_venue','night_club','bar','concert_hall','performing_arts_theater','amphitheatre','opera_house','stadium','arena',
                               'community_center','sports_activity_location']
@@ -46,7 +46,7 @@ class MapsInfo:
             'locationRestriction': location_restriction,
             'rankPreference': rank_preference,
         }
-        field_masks = 'places.name,places.displayName,places.formatted_address,places.types,places.location' # fields to include in the response
+        field_masks = 'places.name,places.displayName,places.formatted_address,places.address_components,places.types,places.location' # fields to include in the response
         headers = { # request headers for the api
             'Content-Type': 'application/json',
             'X-Goog-Api-Key': os.getenv('GOOGLE_MAPS_API_KEY'), # API key from .env file that's essential for the places API request

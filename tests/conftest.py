@@ -86,3 +86,66 @@ def mock_executor():
 
     return mock_get_executor
 
+# Mocks for maps_ifno
+async def mock_get_location(*args, **kwargs):
+    print('mock_get_location')
+    coords = args[0]
+    return {
+
+        "places":[
+            {
+                "name": "places/ASDFASDF12345678",
+            "types": [
+                "event_venue",
+                "establishment"
+            ],
+            "formattedAddress": "1234 1st Ave W, Vancouver, BC V6V 6V6, Canada",
+            "addressComponents": [
+                {
+                    "longText": "Vancouver",
+                    "shortText": "Vancouver",
+                    "types": [
+                        "locality",
+                        "political"
+                    ],
+                    "languageCode": "en"
+                }
+            ],
+            "location": {
+                "latitude": coords['latitude'],
+                "longitude": coords['longitude']
+            },
+            "displayName": {
+                "text": "Some Place",
+                "languageCode": "en"
+            },
+            "distance": 4.5000
+            }
+        ],
+        "locationRestriction": {
+            "circle": {
+                "center": {
+                    "longitude": coords['longitude'],
+                    "latitude": coords['latitude']
+                },
+                "radius": 50.0
+            }
+        },
+        "search_type": "DEFAULT",
+        "included_types": [
+            "event_venue",
+            "night_club"
+        ],
+        "rank_preference": "DISTANCE"
+    }
+
+
+
+@fixture
+def mock_maps_info():
+    def mock_get_maps_info():
+        maps = MagicMock()
+        maps.get_location = AsyncMock(side_effect=mock_get_location)
+        return maps
+    return mock_get_maps_info
+

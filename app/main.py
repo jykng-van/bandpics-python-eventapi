@@ -9,7 +9,7 @@ from http import HTTPStatus
 from app.db import lifespan, connect_to_db
 from app.models import LiveEvent, UpdateLiveEvent
 
-#from maps_info import MapsInfo
+from app.maps_info import MapsInfo, SearchType
 from PIL import Image
 from bson.objectid import ObjectId
 from pymongo import MongoClient, ReturnDocument
@@ -33,6 +33,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+def setup_maps_info(): #prepare maps_info by dependency injection
+    maps = MapsInfo()
+    yield maps
 
 
 @app.get("/")
@@ -126,6 +130,12 @@ async def delete_event(event_id: str, db=Depends(connect_to_db)):
     else:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Event with that ID not found")
 
+@app.get("/locations", response_description="Get places based on coordinates")
+async def get_places(lat: float, lng: float, search_type: int = 1, radius: float = 50.0, maps=Depends(setup_maps_info)):
+    maps = MapsInfo()
+    coords = {'longitude': lng, 'latitude':lat}
+    print('Search Type', SearchType(search_type))
+    return maps.get_location(coords, search_type=SearchType(search_type), search_radius=radius)
 
 handler = Mangum(app=app, lifespan="off") # Use Mangum to handle AWS Lambda events
 
