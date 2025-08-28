@@ -41,7 +41,7 @@ test_event = {
     'description':'test description',
     'eventDate': test_date,
     '_id': test_event_id,
-    'created_id':test_created_at,
+    'created_at':test_created_at,
     'updated_at':test_created_at,
 }
 

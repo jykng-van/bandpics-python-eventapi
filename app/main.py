@@ -76,6 +76,8 @@ async def create_event(event:Annotated[UpdateLiveEvent, Body(embed=True)], db=De
     }
     if 'eventDate' in event: # convert string to date
         event['eventDate'] = datetime.strptime(event['eventDate'], '%Y-%m-%d')
+    event['created_at'] = datetime.now(timezone.utc)
+    event['updated_at'] = datetime.now(timezone.utc)
     print(event)
 
     event_collection = db.get_collection("live_events")
