@@ -74,8 +74,8 @@ async def create_event(event:Annotated[UpdateLiveEvent, Body(embed=True)], db=De
     event = {
         k: v for k, v in event.model_dump(by_alias=True).items() if v is not None
     }
-    if 'eventDate' in event: # convert string to date
-        event['eventDate'] = datetime.strptime(event['eventDate'], '%Y-%m-%d')
+    if 'event_date' in event: # convert string to date
+        event['event_date'] = datetime.strptime(event['event_date'], '%Y-%m-%d')
     event['created_at'] = datetime.now(timezone.utc)
     event['updated_at'] = datetime.now(timezone.utc)
     print(event)
@@ -100,8 +100,8 @@ async def update_event(event_id: str, event:Annotated[UpdateLiveEvent, Body(embe
         k: v for k, v in event.model_dump(by_alias=True).items() if v is not None
     }
     if len(event) > 0:
-        if 'eventDate' in event: # convert string to date
-            event['eventDate'] = datetime.strptime(event['eventDate'], '%Y-%m-%d')
+        if 'event_date' in event: # convert string to date
+            event['event_date'] = datetime.strptime(event['event_date'], '%Y-%m-%d')
 
         update_result = await event_collection.find_one_and_update(
             {'_id': ObjectId(event_id)},

@@ -55,14 +55,14 @@ async def test_create_event(client, mock_mongodb):
         'event':{
             'name': event_name,
             'description': 'new event description',
-            'eventDate': event_date
+            'event_date': event_date
         }
     }
     response = client.post("/events", json=event)
     assert response.status_code == HTTPStatus.OK
     json = response.json()
     assert json['name'] == event_name, "Event name does not match"
-    assert json['eventDate'] == event_date, "Event date does not match"
+    assert json['event_date'] == event_date, "Event date does not match"
 
 # test update_event
 @pytest.mark.asyncio
@@ -74,14 +74,14 @@ async def test_update_event(client, mock_mongodb_live_events_initialized, get_ev
         'event':{
             'name':event_name,
             'description': 'updated event description',
-            'eventDate': event_date
+            'event_date': event_date
         }
     }
     response = client.patch("/events/" + str(get_event_id), json=event)
     assert response.status_code == HTTPStatus.OK
     json = response.json()
     assert json['name'] == event_name, "Event name does not match"
-    assert json['eventDate'] == event_date, "Event date does not match"
+    assert json['event_date'] == event_date, "Event date does not match"
 
 # test delete_event
 @pytest.mark.asyncio

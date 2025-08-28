@@ -40,7 +40,7 @@ class LiveEvent(MongoDBModel):
     name: str = Field(description="Event name", default=None)
 
     description: Optional[str] = Field(default=None, description="Description of the event")
-    eventDate: Optional[date] = Field(default=None, description="Date of the event")
+    event_date: Optional[date] = Field(default=None, description="Date of the event")
 
     location: dict = Field(description="Embedded external data about the event's location", default=None)
     data: dict = Field(description="Embedded external data about the event", default=None)
@@ -53,7 +53,7 @@ class UpdateLiveEvent(BaseModel): # update model for image data because of group
     name: Optional[str] = Field(default=None, description="Event name")
     description: Optional[str] = Field(default=None, description="Description of the event")
 
-    eventDate: Optional[str] = Field(default=None, description="Date of the event")
+    event_date: Optional[str] = Field(default=None, description="Date of the event")
 
     #event: Optional[str] = Field(default=None, description="Event which group belogs to")
     #images: Optional[list[str]] = Field(default=None, description="List of image names")
