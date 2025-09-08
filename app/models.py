@@ -57,8 +57,7 @@ class UpdateLiveEvent(BaseModel): # update model for image data because of group
 
     location: dict = Field(description="Embedded external data about the event's location", default=None)
 
-    #event: Optional[str] = Field(default=None, description="Event which group belogs to")
-    #images: Optional[list[str]] = Field(default=None, description="List of image names")
+    data: dict = Field(description="Embedded external data about the event", default=None)
 
 
 
